@@ -1,33 +1,36 @@
-// server.js
-import express from 'express';
-import cors from 'cors';
-import mysql from 'mysql2';
-import userRoutes from './src/routes/userRoutes.js'
-import reserRoutes from './src/routes/resetRoutes.js'
-// import admin from "firebase-admin"
-// import serviceAccount from "./taxi-fc3f6-firebase-adminsdk-29xll-bae0b81169.json"
 import {initializeApp, applicationDefault } from 'firebase-admin/app';
 import { getMessaging } from "firebase-admin/messaging";
+import express, { json } from "express";
+import cors from "cors";
+
 
 process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+const app = express();
+app.use(express.json());
+
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
+app.use(
+  cors({
+    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+  })
+);
+
+app.use(function(req, res, next) {
+  res.setHeader("Content-Type", "application/json");
+  next();
+});
+
 
 initializeApp({
   credential: applicationDefault(),
   projectId: 'potion-for-creators',
 });
-
-
-const app = express();
-
-app.use(express.json());
-app.use(cors());
-
-
-
-app.use('/api', userRoutes);
-app.use('/api/request-reset', reserRoutes)
-
-
 
 app.post("/send", function (req, res) {
   const receivedToken = req.body.fcmToken;
@@ -58,19 +61,6 @@ app.post("/send", function (req, res) {
   
 });
 
-
-
-const PORT = process.env.PORT || 5051;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(3000, function () {
+  console.log("Server started on port 3000");
 });
-
-
-
-
-
-
-
-
-
-
